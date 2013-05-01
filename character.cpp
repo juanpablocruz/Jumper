@@ -45,7 +45,7 @@ bool Character::checkCollide(){
 
 bool Character::checkHorizontalCollide(){
 	//if(Mapa[((int)x/36)+1][((int)y/36)] == 0)
-		//return true;
+	//	return true;
 	return false;	
 }
 bool Character::checkVerticalCollide(){
