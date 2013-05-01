@@ -66,21 +66,9 @@ int main(void){
 		Mapa[i][(HEIGHT/36)] = -1;
 	}
 	Mapa[300/18][(HEIGHT-96)/36] = 0;
-	/*
-	muros.push_back(new Wall(300,HEIGHT-96,36,36,true));*/
-	resources.push_back(al_load_bitmap("wall.png"));/*
-	muros[muros.size()-1]->sprite = resources.size()-1;
 
-	muros.push_back(new Wall(350,HEIGHT-120,36,36,true));
-	muros[muros.size()-1]->sprite = resources.size()-1;
+	resources.push_back(al_load_bitmap("wall.png"));
 
-	muros.push_back(new Wall(390,HEIGHT-155,36,36,true));
-	muros[muros.size()-1]->sprite = resources.size()-1;
-	muros.push_back(new Wall(426,HEIGHT-155,36,36,true));
-	muros[muros.size()-1]->sprite = resources.size()-1;
-	muros.push_back(new Wall(462,HEIGHT-155,36,36,true));
-	muros[muros.size()-1]->sprite = resources.size()-1;
-	*/
 	hero = new Character(100,HEIGHT-86,muros);
 	resources.push_back(al_load_bitmap("character.png"));
 	hero->assignResource(resources.size()-1);
