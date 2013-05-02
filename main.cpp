@@ -20,8 +20,9 @@
 enum Keys{UP, DOWN, LEFT, RIGHT, SPACE};
 bool keys[5] = {false, false, false, false, false};
 ALLEGRO_FONT *font12 = NULL;
+ALLEGRO_BITMAP *back = NULL;
 
-Character *hero;
+Character *hero, *laura;
 int drawx, drawy;
 
 
@@ -33,6 +34,7 @@ int main(void){
 	const int FPS = 20;
 	drawy=0;
 	drawx=0;
+	bool boundary = false;
 
 	ALLEGRO_DISPLAY *display = NULL;
 	ALLEGRO_EVENT_QUEUE *event_queue = NULL;
@@ -54,24 +56,29 @@ int main(void){
 	al_init_font_addon();
 	al_init_ttf_addon();
 
-	for (int i = 0; i < 1+(WIDTH/18); i++)
+	for (int i = 0; i < 1+(WIDTH/9); i++)
 	{
 		for (int j = 0; j < 1+(HEIGHT/36); j++)
 		{
 			Mapa[i][j] = -2;
 		}
 	}
-	for (int i = 0; i < 1+(WIDTH/18); i++)
+	for (int i = 0; i < 1+(WIDTH/9); i++)
 	{
 		Mapa[i][(HEIGHT/36)] = -1;
 	}
 	Mapa[300/18][(HEIGHT-96)/36] = 0;
 
 	resources.push_back(al_load_bitmap("wall.png"));
+	back = al_load_bitmap("bg.png");
 
-	hero = new Character(100,HEIGHT-86,muros);
-	resources.push_back(al_load_bitmap("character.png"));
+	hero = new Character(100,HEIGHT-80,muros);
+	resources.push_back(al_load_bitmap("hero.png"));
 	hero->assignResource(resources.size()-1);
+
+	laura = new Character(700,HEIGHT-80,muros);
+	resources.push_back(al_load_bitmap("character.png"));
+	laura->assignResource(resources.size()-1);
 
 	ground = al_load_bitmap("ground.png");
 
@@ -103,9 +110,9 @@ int main(void){
 					hero->medio = 0;
 				}
 				hero->imgy = 1;
-				if((hero->x-WIDTH/2)>-hero->xSpeed){
-					if(drawx>0){
-						drawx--;
+				if((hero->x-WIDTH/2)>-hero->xSpeed || boundary){
+					if(hero->viewPoint>0){
+						hero->viewPoint--;
 					}
 				}
 				else hero->move(-1);
@@ -117,10 +124,10 @@ int main(void){
 					hero->medio = 0;
 				}
 				hero->imgy = 2;
-				if((hero->x-WIDTH/2)>-hero->xSpeed){
-					if(drawx==13)drawx=0;
-					else
-					drawx++;
+				if((hero->x-WIDTH/2)>-hero->xSpeed || boundary){
+					//if(drawx==12)drawx=0;
+					//else
+					hero->viewPoint++;
 				}
 				else	hero->move(1);
 			}
@@ -188,15 +195,24 @@ int main(void){
 		}
 		if(redraw && al_is_event_queue_empty(event_queue)){
 			redraw = false;
+			int drawing = (1600-(hero->viewPoint*10+WIDTH));
+			if(drawing == 0) boundary = true;
+			else if(drawing>0) boundary = false;
+			al_draw_bitmap_region(back,hero->viewPoint*10,0,WIDTH,HEIGHT,0,0,0);
 
 			//Draw ground		
-			for (int i = drawy; i < 1+drawy+(WIDTH/18); i++)
+			for (int i = hero->viewPoint; i < 1+(WIDTH/36); i++)
 			{
-				for (int j = drawx; j < 1+drawx+(HEIGHT/36); j++)
+				for (int j = 0; j < 1+(HEIGHT/36); j++)
 				{
-					if(Mapa[i][j]==-1)al_draw_bitmap(ground,i*36,j*36,0);
-					else if(Mapa[i][j]!=-2)al_draw_bitmap(resources[Mapa[i][j]],(i-drawx)*36,(j)*36,0);
-
+					if(Mapa[i][j]==-1){
+						al_draw_bitmap(ground,i*36,j*36,0);
+					}
+					else{
+						if(Mapa[i][j]!=-2)
+							al_draw_bitmap(resources[Mapa[i][j]],(i%(WIDTH/18))*36-(10*hero->viewPoint),j*36,0);
+					}
+					al_draw_textf(font12, al_map_rgb(255, 255, 255), (i%(WIDTH/18))*36-(10*hero->viewPoint),j*36, 0, "%d",Mapa[i][j]);
 				}
 			}
 
@@ -205,14 +221,25 @@ int main(void){
 				al_draw_bitmap(resources[muros[i]->sprite],muros[i]->x,muros[i]->y,0);
 			}
 			render(hero,resources);
-			al_draw_textf(font12, al_map_rgb(255, 255, 255), 205, 5, 0, "herox: %d",Mapa[(int)hero->x/36][(int)hero->y/36]);
+			if(hero->x+hero->viewPoint >= 600){
+				render(laura,resources);
+			}
+			al_draw_textf(font12, al_map_rgb(255, 255, 255), 205, 5, 0, "herox: %d",(int)hero->x+hero->viewPoint);
+			al_draw_textf(font12, al_map_rgb(255, 255, 255), 285, 5, 0, "boundary: %d",boundary);
+
 			al_flip_display();
-			al_clear_to_color(al_map_rgb(100,100,250));
+			al_clear_to_color(al_map_rgb(0,0,0));
 		}
 	}
 	for(int i=0;i<resources.size();i++){
 		al_destroy_bitmap(resources[i]);
 	};
+
+	delete hero;
+	delete laura;
+	for (unsigned int i=0;i<muros.size();i++)
+		delete muros[i];
+	al_destroy_bitmap(back);
 	al_destroy_bitmap(ground);
 	al_destroy_event_queue(event_queue);
 	al_destroy_timer(timer);

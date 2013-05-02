@@ -29,6 +29,7 @@ Character::Character(float x,float y,vector<Wall*> muros){
 	this->medio = 0;
 	this->numJumps = 0;
 	this->muros = muros;
+	this->viewPoint = 0;
 };
 
 bool Character::checkCollide(){
@@ -109,4 +110,9 @@ Wall::Wall(float x,float y, float w, float h, bool ground){
 	this->width = w;
 	this->height = h;
 	this->ground = ground;
+}
+
+Character::~Character(){
+}
+Wall::~Wall(){
 }

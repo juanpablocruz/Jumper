@@ -20,7 +20,7 @@ static vector<ALLEGRO_BITMAP*> resources;
 static const int WIDTH = 800;
 static const int HEIGHT = 500;
 
-static int Mapa[(WIDTH/18)+1][(HEIGHT/36)+1];
+static int Mapa[(WIDTH/9)+1][(HEIGHT/36)+1];
 
 class Wall{
 public:
@@ -33,7 +33,7 @@ public:
 
 class Character{
 public:
-	int sprite,numJumps;
+	int sprite,numJumps, viewPoint;
 	int COLS,ROWS,imgx,imgy,sentido,medio;
 	float x,y,g,xSpeed,ySpeed;
 	bool moving,onGround;
