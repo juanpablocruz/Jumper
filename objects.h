@@ -13,6 +13,10 @@
 
 #define PI 3.14159265
 
+#ifndef MAPWIDTH
+#define MAPWIDTH 1600
+#endif
+
 using namespace std;
 
 static vector<ALLEGRO_BITMAP*> resources;
@@ -20,7 +24,7 @@ static vector<ALLEGRO_BITMAP*> resources;
 static const int WIDTH = 800;
 static const int HEIGHT = 500;
 
-static int Mapa[(WIDTH/9)+1][(HEIGHT/36)+1];
+static int Mapa[1+(MAPWIDTH)][(HEIGHT/36)+1];
 
 class Wall{
 public:
@@ -38,6 +42,8 @@ public:
 	float x,y,g,xSpeed,ySpeed;
 	bool moving,onGround;
 	vector<Wall*> muros;
+	int Mapa[1+(MAPWIDTH)][(HEIGHT/36)+1];
+
 
 	Character(float x,float y,vector<Wall*> muros);
 	~Character();
@@ -49,6 +55,7 @@ public:
 	bool checkCollide();
 	bool checkHorizontalCollide();
 	bool checkVerticalCollide();
+	void assignMap(int (*M)[(HEIGHT/36)+1]);
 };
 
 

@@ -45,12 +45,14 @@ bool Character::checkCollide(){
 }
 
 bool Character::checkHorizontalCollide(){
-	//if(Mapa[((int)x/36)+1][((int)y/36)] == 0)
-	//	return true;
+	if(this->Mapa[(int) (x/18)+this->viewPoint][(int) y/36] == 0 
+		|| this->Mapa[(int) (x/18)+this->viewPoint][(int) (y/36)-1] == 0
+		|| this->Mapa[(int) (x/18)+this->viewPoint][(int) (y/36)+1] == 0)
+		return true;
 	return false;	
 }
 bool Character::checkVerticalCollide(){
-	if(Mapa[(int)(x/18)][(int)(y/18)+1]==1)return true;
+	if(this->Mapa[(int)(x/18)][(int)(y/18)+1]==1)return true;
 	return false;
 }
 void Character::assignResource(int id){
@@ -115,4 +117,12 @@ Wall::Wall(float x,float y, float w, float h, bool ground){
 Character::~Character(){
 }
 Wall::~Wall(){
+}
+
+void Character::assignMap(int (*M)[(HEIGHT/36)+1]){
+	for(int i=0;i<1+(MAPWIDTH);i++){
+		for(int j=0;j<(HEIGHT/36)+1;j++){
+			this->Mapa[i][j] = M[i][j];
+		}
+	}
 }
