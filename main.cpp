@@ -98,7 +98,7 @@ int main(void){
 	textList.push_back(new Text("fonts/hobbit.ttf", 42,"Welcome",200,150));
 	textList[0]->createTimer(3);
 
-	textList.push_back(new Text("fonts/arial.ttf", 14,"",200,150));
+	textList.push_back(new Text("fonts/arcade.ttf", 18,"",200,150));
 	textList[1]->active = false;
 	
 
@@ -218,7 +218,7 @@ int main(void){
 			al_draw_bitmap_region(bg[1],hero->viewPoint*10,0,WIDTH,HEIGHT,0,0,0);
 
 			//Draw ground		
-			for (int i = hero->viewPoint; i < 1+hero->viewPoint+(WIDTH/36); i++)
+			for (int i = hero->viewPoint; i < 1+hero->viewPoint+(WIDTH/32); i++)
 			{
 				for (int j = 0; j < 1+(HEIGHT/36); j++)
 				{
@@ -268,9 +268,9 @@ int main(void){
 				render(heroine,resources);
 			}
 			al_draw_textf(textList[1]->fuente, al_map_rgb(255, 255, 255), 205, 5, 0, "%d,",
-				(MAPWIDTH-(hero->viewPoint*10+WIDTH)));
+				(int) hero->Mapa[(int) (hero->x/32)+hero->viewPoint][(int) (hero->y/36)+2]);
 			al_draw_textf(textList[1]->fuente, al_map_rgb(255, 255, 255), 285, 5, 0, " %d",
-				hero->Mapa[(int) (hero->x/18)+hero->viewPoint][(int) (hero->y/36)+1]);
+				(int)hero->y+48+32);
 
 			//al_draw_filled_rectangle((hero->x/18)+hero->viewPoint,(hero->y/36),(hero->x/18)+hero->viewPoint+32,(hero->y/36)+48,al_map_rgba(150,0,0,150));
 			al_flip_display();
