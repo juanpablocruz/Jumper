@@ -38,7 +38,7 @@ public:
 	bool moving,onGround,locked;
 	int Mapa[1+(MAPWIDTH)][(HEIGHT/36)+1];
 	int currentBg,bgNum;
-	ALLEGRO_SAMPLE *jumpSound,*drownSound,*endSound,*winSound,*beachSound;
+	ALLEGRO_SAMPLE *jumpSound,*drownSound,*endSound,*winSound;
 
 
 	Character(float x,float y);

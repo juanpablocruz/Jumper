@@ -39,7 +39,6 @@ Character::Character(float x,float y){
 	this->drownSound = al_load_sample("sound/drown.wav");
 	this->endSound = al_load_sample("sound/end.wav");
 	this->winSound = al_load_sample("sound/win.wav");
-	this->beachSound = al_load_sample("sound/beach.wav");
 };
 
 bool Character::checkCollide(){
@@ -95,8 +94,6 @@ void Character::update(){
 			this->y = HEIGHT-78;
 			this->currentBg=(++this->currentBg)%this->bgNum;
 			this->viewPoint = 0;
-			if(this->currentBg == 1)
-				al_play_sample(beachSound, 1.0, 0.0,1.0,ALLEGRO_PLAYMODE_LOOP,NULL);
 
 		}else{
 			this->x +=xSpeed;
@@ -161,7 +158,6 @@ Character::~Character(){
 	al_destroy_sample(endSound);
 	al_destroy_sample(winSound);
 	al_destroy_sample(drownSound);
-	al_destroy_sample(beachSound);
 }
 
 
