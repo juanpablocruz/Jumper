@@ -30,10 +30,12 @@ Character::Character(float x,float y,vector<Wall*> muros){
 	this->numJumps = 0;
 	this->muros = muros;
 	this->viewPoint = 0;
+	this->locked = false;
+	this->currentBg = 0;
 };
 
 bool Character::checkCollide(){
-	for(int i=0;i<muros.size();i++){
+	for(unsigned int i=0;i<muros.size();i++){
 		if((x >= (muros[i]->x-muros[i]->width/2) && x <= (muros[i]->x+muros[i]->width/2))
 		 && (y+46 >= (muros[i]->y-muros[i]->height/2) && y <= (muros[i]->y+muros[i]->height/2))){
 		 	//if(!onGround)
@@ -62,6 +64,9 @@ void Character::assignResource(int id){
 }
 
 void Character::update(){
+	if(!locked){
+	if(this->x+this->viewPoint >=600)locked = true;
+	else locked = false;
 	if(!checkVerticalCollide())onGround=false;
 	if(!onGround){		
 		this->ySpeed += g; 
@@ -79,10 +84,27 @@ void Character::update(){
 			this->numJumps = 0;
 		}
 	}
+	}
+	else{
+		if((this->x+xSpeed)>=WIDTH-32){
+			this->locked = false;
+			this->x = 30;
+			this->y = HEIGHT-78;
+			this->currentBg=(++this->currentBg)%3;
+			this->viewPoint = 0;
+		}else{
+			this->x +=xSpeed;
+			this->medio++;
+			if(this->medio%6==0){
+				this->imgx++;
+				this->medio = 0;
+			}
+			this->imgx =(this->imgx)%(this->COLS);
+		}
+	}
 }
 
 void Character::move(int i){
-
 	this->sentido = i;
 	this->x += xSpeed*i;
 	if(checkHorizontalCollide()){
@@ -96,6 +118,11 @@ void Character::move(int i){
 		if(this->x <= 0)this->x = 0;
 		break;
 	}
+}
+
+void Character::setDim(int w,int h){
+	this->sw = w;
+	this->sh = h;
 }
 
 void Character::jump(){
@@ -114,7 +141,7 @@ void Character::jump(){
 }
 
 void render(Character *c,vector<ALLEGRO_BITMAP*> resources){
-	al_draw_bitmap_region(resources[c->sprite],c->imgx*32,c->imgy*48,32,48,c->x,c->y,0);
+	al_draw_bitmap_region(resources[c->sprite],c->imgx*c->sw,c->imgy*c->sh,c->sw,c->sh,c->x,c->y,0);
 }
 
 Wall::Wall(float x,float y, float w, float h, bool ground){

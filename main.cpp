@@ -12,6 +12,10 @@
 #include <allegro5/allegro_ttf.h>
 #endif
 
+#ifndef  ALLEGRO_STATICLINK
+#define ALLEGRO_STATICLINK
+#endif
+
 #include <vector>
 #include <string>
 #include <math.h>
@@ -26,7 +30,7 @@ enum Keys{UP, DOWN, LEFT, RIGHT, SPACE};
 bool keys[5] = {false, false, false, false, false};
 
 Character *hero, *heroine;
-
+std::vector<Character*> npc;
 
 int main(void){
 	bool done = false;
@@ -80,26 +84,38 @@ int main(void){
 	resources.push_back(al_load_bitmap("images/tiles/water.png"));
 	bg.push_back(al_load_bitmap("images/bg/bg.png"));
 	bg.push_back(al_load_bitmap("images/bg/cave.png"));
+	bg.push_back(al_load_bitmap("images/bg/studio.png"));
 
 	hero = new Character(100,HEIGHT-78,muros);
 	resources.push_back(al_load_bitmap("images/characters/hero.png"));
 	hero->assignResource(resources.size()-1);
 	hero->assignMap(Mapa);
+	hero->setDim(32,48);
 
 	heroine = new Character(700,HEIGHT-78,muros);
 	resources.push_back(al_load_bitmap("images/characters/character.png"));
 	heroine->assignResource(resources.size()-1);
+	heroine->setDim(32,48);
+
+	npc.push_back(new Character(400,HEIGHT-74,muros));
+	resources.push_back(al_load_bitmap("images/characters/camera.png"));
+	npc[npc.size()-1]->assignResource(resources.size()-1);
+	npc[npc.size()-1]->setDim(36,44);
 
 	ground = al_load_bitmap("images/tiles/ground_green.png");
 
 	event_queue = al_create_event_queue();
 	timer = al_create_timer(1.0 / FPS);
 	
-	textList.push_back(new Text("fonts/hobbit.ttf", 42,"Welcome",200,150));
+	textList.push_back(new Text("fonts/hobbit.ttf", 42,"Welcome",(WIDTH/2)-(3*42),70));
 	textList[0]->createTimer(3);
 
-	textList.push_back(new Text("fonts/arcade.ttf", 18,"",200,150));
+	textList.push_back(new Text("fonts/arcade.ttf", 18,"VICTORY",(WIDTH/2)-(3*18),HEIGHT/2));
+	textList[1]->createTimer(3);
 	textList[1]->active = false;
+
+
+	
 	
 
 	al_register_event_source(event_queue, al_get_keyboard_event_source());
@@ -114,12 +130,12 @@ int main(void){
 
 		if(ev.type == ALLEGRO_EVENT_TIMER){
 			redraw = true;
-			if(!hero->moving){
+			if(!hero->moving && !hero->locked){
 				hero->imgy = 0;
 				hero->imgx = 0;
 			}
 
-			if(keys[LEFT]){
+			if(keys[LEFT]&& !hero->locked){
 				hero->medio++;
 				if(hero->medio%6==0){
 					hero->imgx++;
@@ -134,7 +150,7 @@ int main(void){
 				}
 				else hero->move(-1);
 			}
-			if(keys[RIGHT]){
+			if(keys[RIGHT] && !hero->locked){
 				hero->medio++;
 				if(hero->medio%6==0){
 					hero->imgx++;
@@ -181,8 +197,10 @@ int main(void){
 				hero->moving = true;
 				break;
 			case ALLEGRO_KEY_SPACE:
-				hero->numJumps++;
-				hero->jump();
+				if(!hero->locked){
+					hero->numJumps++;
+					hero->jump();
+				}
 				break;
 			}
 		}
@@ -214,8 +232,9 @@ int main(void){
 			int drawing = (MAPWIDTH-(hero->viewPoint*10+WIDTH));
 			if(drawing <= 0) boundary = true;
 			else if(drawing>0) boundary = false;
-			
-			al_draw_bitmap_region(bg[1],hero->viewPoint*10,0,WIDTH,HEIGHT,0,0,0);
+		
+
+			al_draw_bitmap_region(bg[hero->currentBg],hero->viewPoint*10,0,WIDTH,HEIGHT,0,0,0);
 
 			//Draw ground		
 			for (int i = hero->viewPoint; i < 1+hero->viewPoint+(WIDTH/32); i++)
@@ -253,12 +272,21 @@ int main(void){
 					//al_draw_textf(font12, al_map_rgb(255, 255, 255), (i-hero->viewPoint)*36+15,(j*36)+11, 0, "%d",Mapa[i][j]);
 				}
 			}
+			if(hero->locked && (hero->x+hero->xSpeed)>=WIDTH-32)
+				textList[1]->active = true;
 
 			for (unsigned int i=0;i<textList.size();i++){
 				if(textList[i]->active){
 					textList[i]->render();
 				}
 			}
+
+			for(unsigned int i=0;i<npc.size();i++){
+				al_draw_bitmap_region(
+					resources[npc[i]->sprite],0,0,
+					npc[i]->sw,npc[i]->sh,npc[i]->x-(32*hero->viewPoint),npc[i]->y,0);
+			}
+
 			hero->update();
 			for(unsigned int i=0;i<muros.size();i++){
 				al_draw_bitmap(resources[muros[i]->sprite],muros[i]->x,muros[i]->y,0);
@@ -270,7 +298,7 @@ int main(void){
 			al_draw_textf(textList[1]->fuente, al_map_rgb(255, 255, 255), 205, 5, 0, "%d,",
 				(int) hero->Mapa[(int) (hero->x/32)+hero->viewPoint][(int) (hero->y/36)+2]);
 			al_draw_textf(textList[1]->fuente, al_map_rgb(255, 255, 255), 285, 5, 0, " %d",
-				(int)hero->y+48+32);
+				(int)hero->currentBg);
 
 			//al_draw_filled_rectangle((hero->x/18)+hero->viewPoint,(hero->y/36),(hero->x/18)+hero->viewPoint+32,(hero->y/36)+48,al_map_rgba(150,0,0,150));
 			al_flip_display();
@@ -280,7 +308,9 @@ int main(void){
 	for(unsigned int i=0;i<resources.size();i++){
 		al_destroy_bitmap(resources[i]);
 	};
-
+	for(unsigned int i=0;i<npc.size();i++){
+		delete npc[i];
+	};
 	delete hero;
 	delete heroine;
 

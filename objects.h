@@ -37,17 +37,19 @@ public:
 
 class Character{
 public:
-	int sprite,numJumps, viewPoint;
+	int sprite,numJumps, viewPoint,sw,sh;
 	int COLS,ROWS,imgx,imgy,sentido,medio;
 	float x,y,g,xSpeed,ySpeed;
-	bool moving,onGround;
+	bool moving,onGround,locked;
 	vector<Wall*> muros;
 	int Mapa[1+(MAPWIDTH)][(HEIGHT/36)+1];
+	int currentBg;
 
 
 	Character(float x,float y,vector<Wall*> muros);
 	~Character();
 
+	void setDim(int w,int h);
 	void move(int i);
 	void jump();
 	void assignResource(int id);
