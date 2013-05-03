@@ -35,6 +35,9 @@ int main(void){
 	bool drawLine = false;
 	const int FPS = 20;
 	bool boundary = false;
+	int curr_water = 0;
+	int fps_counter = 0;
+	int cont_water_drawn = 0;
 
 	ALLEGRO_DISPLAY *display = NULL;
 	ALLEGRO_EVENT_QUEUE *event_queue = NULL;
@@ -69,24 +72,25 @@ int main(void){
 		Mapa[i][(HEIGHT/36)] = -1;
 	}
 	Mapa[300/18][(HEIGHT-96)/36] = 0;
-	Mapa[20][(HEIGHT/36)] = -2;
-	Mapa[21][(HEIGHT/36)] = -2;
-	Mapa[22][(HEIGHT/36)] = -2;
+	Mapa[20][(HEIGHT/36)] = -3;
+	Mapa[21][(HEIGHT/36)] = -3;
+	Mapa[22][(HEIGHT/36)] = -3;
 
 	resources.push_back(al_load_bitmap("images/tiles/wall.png"));
+	resources.push_back(al_load_bitmap("images/tiles/water.png"));
 	bg.push_back(al_load_bitmap("images/bg/bg.png"));
 	bg.push_back(al_load_bitmap("images/bg/cave.png"));
 
-	hero = new Character(100,HEIGHT-80,muros);
+	hero = new Character(100,HEIGHT-78,muros);
 	resources.push_back(al_load_bitmap("images/characters/hero.png"));
 	hero->assignResource(resources.size()-1);
 	hero->assignMap(Mapa);
 
-	heroine = new Character(700,HEIGHT-80,muros);
+	heroine = new Character(700,HEIGHT-78,muros);
 	resources.push_back(al_load_bitmap("images/characters/character.png"));
 	heroine->assignResource(resources.size()-1);
 
-	ground = al_load_bitmap("images/tiles/ground.png");
+	ground = al_load_bitmap("images/tiles/ground_green.png");
 
 	event_queue = al_create_event_queue();
 	timer = al_create_timer(1.0 / FPS);
@@ -138,8 +142,6 @@ int main(void){
 				}
 				hero->imgy = 2;
 				if((hero->x-WIDTH/2)>-hero->xSpeed && !boundary){
-					//if(drawx==12)drawx=0;
-					//else
 					hero->viewPoint++;
 				}
 				else	hero->move(1);
@@ -208,6 +210,7 @@ int main(void){
 		}
 		if(redraw && al_is_event_queue_empty(event_queue)){
 			redraw = false;
+			fps_counter++;
 			int drawing = (MAPWIDTH-(hero->viewPoint*10+WIDTH));
 			if(drawing <= 0) boundary = true;
 			else if(drawing>0) boundary = false;
@@ -220,15 +223,31 @@ int main(void){
 				for (int j = 0; j < 1+(HEIGHT/36); j++)
 				{
 					switch(Mapa[i][j]){
-					case -1:
-						al_draw_bitmap(ground,(i-hero->viewPoint)*36,j*36,0);
+					case -1:{
+						if(Mapa[i+1][j]!=-1)
+							al_draw_bitmap_region(ground,64,0,32,32,(i-hero->viewPoint)*32,j*36,0);
+						else if(Mapa[i-1][j]!=-1)
+							al_draw_bitmap_region(ground,0,0,32,32,(i-hero->viewPoint)*32,j*36,0);
+						else
+							al_draw_bitmap_region(ground,32,0,32,32,(i-hero->viewPoint)*32,j*36,0);
+						cont_water_drawn = 0;
 						break;
+							}
 					case -2:
 						break;
+					case -3:
+						{
+							al_draw_bitmap_region(resources[1],(cont_water_drawn+curr_water)*32,0,32,32,(i-hero->viewPoint)*32,j*36,0);
+							cont_water_drawn++;
+							if(fps_counter%10 == 0)
+								curr_water = (curr_water++)%2;
+							break;
+						}
 					default:
 						al_draw_bitmap(resources[Mapa[i][j]],
 							(i-hero->viewPoint)*36, // x to draw
 							j*36,0);
+						cont_water_drawn = 0;
 						break;
 					}
 					//al_draw_textf(font12, al_map_rgb(255, 255, 255), (i-hero->viewPoint)*36+15,(j*36)+11, 0, "%d",Mapa[i][j]);
