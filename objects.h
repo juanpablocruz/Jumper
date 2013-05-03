@@ -4,9 +4,13 @@
 #ifdef _WIN32 
 #include <allegro5\allegro.h>
 #include <allegro5\allegro_image.h>
+#include <allegro5\allegro_audio.h>
+#include <allegro5\allegro_acodec.h>
 #else
 #include <allegro5/allegro.h>
 #include <allegro5/allegro_image.h>
+#include <allegro5/allegro_audio.h>
+#include <allegro5/allegro_acodec.h>
 #endif
 
 #include <vector>
@@ -26,27 +30,18 @@ static const int HEIGHT = 500;
 
 static int Mapa[1+(MAPWIDTH)][(HEIGHT/36)+1];
 
-class Wall{
-public:
-	float width,height,x,y,sprite;
-	bool ground,collide;
-
-	Wall(float x,float y, float w, float h, bool ground);
-	~Wall();
-};
-
 class Character{
 public:
 	int sprite,numJumps, viewPoint,sw,sh;
 	int COLS,ROWS,imgx,imgy,sentido,medio;
 	float x,y,g,xSpeed,ySpeed;
 	bool moving,onGround,locked;
-	vector<Wall*> muros;
 	int Mapa[1+(MAPWIDTH)][(HEIGHT/36)+1];
-	int currentBg;
+	int currentBg,bgNum;
+	ALLEGRO_SAMPLE *jumpSound,*drownSound,*endSound,*winSound,*beachSound;
 
 
-	Character(float x,float y,vector<Wall*> muros);
+	Character(float x,float y);
 	~Character();
 
 	void setDim(int w,int h);
@@ -61,8 +56,24 @@ public:
 };
 
 
+class NPC : public Character{
+public:
+	int desfasex;
 
-static vector<Wall*> muros;
+	NPC(float x,float y, int df);
+	~NPC();
+};
 
-void render(Character *c,vector<ALLEGRO_BITMAP*> resources);
+class Hero : public Character{
+public:
+	std::vector<NPC *> npcs;
+
+	Hero(float x,float y);
+	~Hero();
+};
+
+
+
+void render(Hero *c,vector<ALLEGRO_BITMAP*> resources);
+void render(NPC *c,int vp,vector<ALLEGRO_BITMAP*> resources);
 #endif
