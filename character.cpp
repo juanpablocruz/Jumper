@@ -41,21 +41,26 @@ Character::Character(float x,float y){
 	this->winSound = al_load_sample("sound/win.wav");
 };
 
-bool Character::checkCollide(){
+bool Hero::checkCollide(int i){
+	if((this->x+this->sw+this->viewPoint < this->npcs[i]->x+this->npcs[i]->sw)&&
+		(this->x+this->viewPoint > this->npcs[i]->x)&&
+		(this->y+this->sh < this->npcs[i]->y+this->npcs[i]->sh)&&
+		(this->y+this->sh > this->npcs[i]->y))
+		return true;
 	return false;
 }
 
 bool Character::checkHorizontalCollide(){
-	if(this->Mapa[(int) (x/32)+viewPoint+1][(int) (y/36)] == 0 
-		|| this->Mapa[(int) (x/32)+this->viewPoint-1][(int) (y/36)] == 0
-		|| this->Mapa[(int) (x/32)+this->viewPoint+1][(int) (y/36)+1] == 0)
+	if(this->curr_map->mapa[(int) (x/32)+viewPoint+1][(int) (y/36)] == 0 
+		|| this->curr_map->mapa[(int) (x/32)+this->viewPoint-1][(int) (y/36)] == 0
+		|| this->curr_map->mapa[(int) (x/32)+this->viewPoint+1][(int) (y/36)+1] == 0)
 		return true;
 	return false;	
 }
 bool Character::checkVerticalCollide(){
-	if(this->Mapa[(int) (x/32)+viewPoint][(int) (y/36)+2] == 0 ||
-		this->Mapa[(int) (x/32)+viewPoint][(int) (y/36)+2]== -1)return true;
-	else if (this->Mapa[(int) (x/32)+viewPoint][(int) (y/36)+2] == -3)return false;
+	if(this->curr_map->mapa[(int) (x/32)+viewPoint][(int) (y/36)+2] == 0 ||
+		this->curr_map->mapa[(int) (x/32)+viewPoint][(int) (y/36)+2]== -1)return true;
+	else if (this->curr_map->mapa[(int) (x/32)+viewPoint][(int) (y/36)+2] == -3)return false;
 	return false;
 }
 void Character::assignResource(int id){
@@ -144,11 +149,11 @@ void Character::jump(){
 	}
 }
 
-void render(Hero *c,vector<ALLEGRO_BITMAP*> resources){
-	al_draw_bitmap_region(resources[c->sprite],c->imgx*c->sw,c->imgy*c->sh,c->sw,c->sh,c->x,c->y,0);
+void render(Hero *c,vector<ALLEGRO_BITMAP*> rc){
+	al_draw_bitmap_region(rc[c->sprite],c->imgx*c->sw,c->imgy*c->sh,c->sw,c->sh,c->x,c->y,0);
 }
-void render(NPC *c,int vp,vector<ALLEGRO_BITMAP*> resources){
-	al_draw_bitmap_region(resources[c->sprite],0,0,
+void render(NPC *c,int vp,vector<ALLEGRO_BITMAP*> rc){
+	al_draw_bitmap_region(rc[c->sprite],0,0,
 					c->sw,c->sh,c->x-(32*vp),c->y,0);
 }
 
@@ -161,20 +166,17 @@ Character::~Character(){
 }
 
 
-void Character::assignMap(int (*M)[(HEIGHT/36)+1]){
-	for(int i=0;i<1+(MAPWIDTH);i++){
-		for(int j=0;j<(HEIGHT/36)+1;j++){
-			this->Mapa[i][j] = M[i][j];
-		}
-	}
+void Character::assignMap(Map *M){
+	this->curr_map = M;
 }
 
 Hero::Hero(float x,float y):Character(x,y){
 	
 }
 
-NPC::NPC(float x,float y, int df):Character(x,y){
+NPC::NPC(float x,float y, int df,int id_m):Character(x,y){
 	this->desfasex = df;
+	this->id_mapa = id_m;
 }
 
 Hero::~Hero(){

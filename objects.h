@@ -14,21 +14,14 @@
 #endif
 
 #include <vector>
+#include "Map.h"
+#include "variables.h"
 
 #define PI 3.14159265
-
-#ifndef MAPWIDTH
-#define MAPWIDTH 1600
-#endif
 
 using namespace std;
 
 static vector<ALLEGRO_BITMAP*> resources;
-
-static const int WIDTH = 800;
-static const int HEIGHT = 500;
-
-static int Mapa[1+(MAPWIDTH)][(HEIGHT/36)+1];
 
 class Character{
 public:
@@ -36,7 +29,7 @@ public:
 	int COLS,ROWS,imgx,imgy,sentido,medio;
 	float x,y,g,xSpeed,ySpeed;
 	bool moving,onGround,locked;
-	int Mapa[1+(MAPWIDTH)][(HEIGHT/36)+1];
+	Map *curr_map;
 	int currentBg,bgNum;
 	ALLEGRO_SAMPLE *jumpSound,*drownSound,*endSound,*winSound;
 
@@ -49,18 +42,19 @@ public:
 	void jump();
 	void assignResource(int id);
 	void update();
-	bool checkCollide();
 	bool checkHorizontalCollide();
 	bool checkVerticalCollide();
-	void assignMap(int (*M)[(HEIGHT/36)+1]);
+
+	void assignMap(Map *M);
 };
 
 
 class NPC : public Character{
 public:
-	int desfasex;
+	int desfasex,id_mapa;
+	bool active;
 
-	NPC(float x,float y, int df);
+	NPC(float x,float y, int df, int id_m);
 	~NPC();
 };
 
@@ -68,12 +62,13 @@ class Hero : public Character{
 public:
 	std::vector<NPC *> npcs;
 
+	bool checkCollide(int i);
 	Hero(float x,float y);
 	~Hero();
 };
 
 
 
-void render(Hero *c,vector<ALLEGRO_BITMAP*> resources);
-void render(NPC *c,int vp,vector<ALLEGRO_BITMAP*> resources);
+void render(Hero *c,vector<ALLEGRO_BITMAP*> rc);
+void render(NPC *c,int vp,vector<ALLEGRO_BITMAP*> rc);
 #endif

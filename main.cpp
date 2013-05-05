@@ -25,10 +25,9 @@
 #include <math.h>
 #include "objects.h"
 #include "text.h"
+#include "Map.h"
+#include "variables.h"
 
-#ifndef MAPWIDTH
-#define MAPWIDTH 1600
-#endif
 
 enum Keys{UP, DOWN, LEFT, RIGHT, SPACE};
 bool keys[5] = {false, false, false, false, false};
@@ -53,7 +52,6 @@ int main(void){
 	ALLEGRO_DISPLAY *display = NULL;
 	ALLEGRO_EVENT_QUEUE *event_queue = NULL;
 	ALLEGRO_TIMER *timer = NULL;
-	vector<ALLEGRO_BITMAP*> bg;
 	ALLEGRO_BITMAP *ground = NULL;
 	ALLEGRO_SAMPLE *song= NULL;
 	ALLEGRO_SAMPLE_INSTANCE *sI = NULL;
@@ -81,39 +79,84 @@ int main(void){
 	al_set_sample_instance_playmode(sI,ALLEGRO_PLAYMODE_LOOP);
 	al_attach_sample_instance_to_mixer(sI,al_get_default_mixer());
 
-	for (int i = 0; i < 1+MAPWIDTH; i++)
-	{
-		for (int j = 0; j < 1+(HEIGHT/36); j++)
-		{
-			Mapa[i][j] = -2;
-		}
-	}
-	for (int i = 0; i < 1+MAPWIDTH; i++)
-	{
-		Mapa[i][(HEIGHT/36)] = -1;
-	}
-	Mapa[300/18][(HEIGHT-96)/36] = 0;
-	Mapa[20][(HEIGHT/36)] = -3;
-	Mapa[21][(HEIGHT/36)] = -3;
-	Mapa[22][(HEIGHT/36)] = -3;
-
 	resources.push_back(al_load_bitmap("images/tiles/wall.png"));
 	resources.push_back(al_load_bitmap("images/tiles/water.png"));
-	bg.push_back(al_load_bitmap("images/bg/bg.png"));
-	bg.push_back(al_load_bitmap("images/bg/beach.png"));
-	bg.push_back(al_load_bitmap("images/bg/underground.png"));
-	bg.push_back(al_load_bitmap("images/bg/cave.png"));
-	bg.push_back(al_load_bitmap("images/bg/jungle.png"));
-	bg.push_back(al_load_bitmap("images/bg/clouds.png"));
-	bg.push_back(al_load_bitmap("images/bg/studio.png"));
 
-	npc.push_back(new NPC(3300,HEIGHT-78,40));
+	bg.push_back(al_load_bitmap("images/bg/bg.png"));
+	mapas.push_back(new Map(bg.size()-1));
+	for (int i = 0; i < 1+MAPWIDTH; i++)
+	{
+		mapas[bg.size()-1]->mapa[i][MAPHEIGHT] = -1;
+	}
+	mapas[bg.size()-1]->mapa[300/18][(HEIGHT-96)/36] = 0;
+	mapas[bg.size()-1]->mapa[20][MAPHEIGHT] = -3;
+	mapas[bg.size()-1]->mapa[21][MAPHEIGHT] = -3;
+	mapas[bg.size()-1]->mapa[22][MAPHEIGHT] = -3;
+	mapas[bg.size()-1]->eventos.push_back(new Event(132,HEIGHT-78));
+	mapas[bg.size()-1]->eventos[0]->path.push_back(140);
+	mapas[bg.size()-1]->eventos[0]->path.push_back(-2);
+	mapas[bg.size()-1]->eventos[0]->path.push_back(124);
+	bg.push_back(al_load_bitmap("images/bg/beach.png"));
+	mapas.push_back(new Map(bg.size()-1));
+	for (int i = 0; i < 1+MAPWIDTH; i++)
+	{
+		mapas[bg.size()-1]->mapa[i][MAPHEIGHT] = -1;
+	}
+	mapas[bg.size()-1]->mapa[23][MAPHEIGHT] = -3;
+	mapas[bg.size()-1]->mapa[24][MAPHEIGHT] = -3;
+	mapas[bg.size()-1]->mapa[25][MAPHEIGHT] = -3;
+	mapas[bg.size()-1]->mapa[26][MAPHEIGHT] = -3;
+	mapas[bg.size()-1]->mapa[53][MAPHEIGHT] = -3;
+	mapas[bg.size()-1]->mapa[54][MAPHEIGHT] = -3;
+	mapas[bg.size()-1]->mapa[55][MAPHEIGHT] = -3;
+	mapas[bg.size()-1]->mapa[56][MAPHEIGHT] = -3;
+	mapas[bg.size()-1]->mapa[57][MAPHEIGHT] = -3;
+	mapas[bg.size()-1]->mapa[80][MAPHEIGHT] = -3;
+	mapas[bg.size()-1]->mapa[81][MAPHEIGHT] = -3;
+	mapas[bg.size()-1]->mapa[82][MAPHEIGHT] = -3;
+	mapas[bg.size()-1]->mapa[83][MAPHEIGHT] = -3;
+	mapas[bg.size()-1]->mapa[84][MAPHEIGHT] = -3;
+
+
+	bg.push_back(al_load_bitmap("images/bg/underground.png"));
+	mapas.push_back(new Map(bg.size()-1));
+	for (int i = 0; i < 1+MAPWIDTH; i++)
+	{
+		mapas[bg.size()-1]->mapa[i][MAPHEIGHT] = -1;
+	}
+	mapas[bg.size()-1]->mapa[33][MAPHEIGHT] = -3;
+	mapas[bg.size()-1]->mapa[34][MAPHEIGHT] = -3;
+	mapas[bg.size()-1]->mapa[35][MAPHEIGHT] = -3;
+	mapas[bg.size()-1]->mapa[66][MAPHEIGHT] = -3;
+	mapas[bg.size()-1]->mapa[67][MAPHEIGHT] = -3;
+	mapas[bg.size()-1]->mapa[69][MAPHEIGHT] = -3;
+	mapas[bg.size()-1]->mapa[70][MAPHEIGHT] = -3;
+	mapas[bg.size()-1]->mapa[71][MAPHEIGHT] = -3;
+	mapas[bg.size()-1]->mapa[72][MAPHEIGHT] = -3;
+	mapas[bg.size()-1]->mapa[73][MAPHEIGHT] = -3;
+	mapas[bg.size()-1]->mapa[74][MAPHEIGHT] = -3;
+	mapas[bg.size()-1]->mapa[75][MAPHEIGHT] = -3;
+	mapas[bg.size()-1]->mapa[76][MAPHEIGHT] = -1;
+	mapas[bg.size()-1]->mapa[77][MAPHEIGHT] = -3;
+	mapas[bg.size()-1]->mapa[78][MAPHEIGHT] = -3;
+	mapas[bg.size()-1]->mapa[79][MAPHEIGHT] = -3;
+
+	bg.push_back(al_load_bitmap("images/bg/cave.png"));
+	mapas.push_back(new Map(bg.size()-1));
+	bg.push_back(al_load_bitmap("images/bg/jungle.png"));
+	mapas.push_back(new Map(bg.size()-1));
+	bg.push_back(al_load_bitmap("images/bg/clouds.png"));
+	mapas.push_back(new Map(bg.size()-1));
+	bg.push_back(al_load_bitmap("images/bg/studio.png"));
+	mapas.push_back(new Map(bg.size()-1));
+
+	npc.push_back(new NPC(3300,HEIGHT-78,40,2));
 	resources.push_back(al_load_bitmap("images/characters/character.png"));
 	npc[npc.size()-1]->assignResource(resources.size()-1);
 	npc[npc.size()-1]->setDim(32,48);
 
 
-	npc.push_back(new NPC(400,HEIGHT-74,0));
+	npc.push_back(new NPC(400,HEIGHT-74,0,0));
 	resources.push_back(al_load_bitmap("images/characters/camera.png"));
 	npc[npc.size()-1]->assignResource(resources.size()-1);
 	npc[npc.size()-1]->setDim(36,44);
@@ -121,7 +164,7 @@ int main(void){
 	hero = new Hero(100,HEIGHT-78);
 	resources.push_back(al_load_bitmap("images/characters/hero.png"));
 	hero->assignResource(resources.size()-1);
-	hero->assignMap(Mapa);
+	hero->assignMap(mapas[hero->currentBg]);
 	hero->setDim(32,48);
 	hero->npcs = npc;
 	hero->bgNum = bg.size();
@@ -250,23 +293,34 @@ int main(void){
 		if(redraw && al_is_event_queue_empty(event_queue)){
 			redraw = false;
 			fps_counter++;
-			int drawing = (MAPWIDTH-(hero->viewPoint*10+WIDTH));
+			int drawing = ((MAPWIDTH)-(hero->viewPoint*10+WIDTH));
 			if(drawing <= 0) boundary = true;
 			else if(drawing>0) boundary = false;
-		
+			int evento=mapas[hero->currentBg]->checkEvents(hero->x+hero->viewPoint,hero->y);
+			if(evento!=-1){
+				hero->locked = true;
+				if(mapas[hero->currentBg]->eventos[evento]->t_wait>0){
+					if(fps_counter%20 == 0)
+						mapas[hero->currentBg]->eventos[evento]->sleep_time();
+				}
+				else mapas[hero->currentBg]->eventos[evento]->move_to(hero->x,hero->y,hero->xSpeed);
+			}
 
-			al_draw_bitmap_region(bg[hero->currentBg],hero->viewPoint*10,0,WIDTH,HEIGHT,0,0,0);
+			if(hero->currentBg != hero->curr_map->id_bg)
+				hero->curr_map = mapas[hero->currentBg];
+
+			al_draw_bitmap_region(bg[hero->curr_map->id_bg],hero->viewPoint*10,0,WIDTH,HEIGHT,0,0,0);
 
 			//Draw ground		
 			for (int i = hero->viewPoint; i < 1+hero->viewPoint+(WIDTH/32); i++)
 			{
-				for (int j = 0; j < 1+(HEIGHT/36); j++)
+				for (int j = 0; j < 1+MAPHEIGHT; j++)
 				{
-					switch(Mapa[i][j]){
+					switch(hero->curr_map->mapa[i][j]){
 					case -1:{
-						if(Mapa[i+1][j]!=-1)
+						if(hero->curr_map->mapa[i+1][j]!=-1)
 							al_draw_bitmap_region(ground,64,0,32,32,(i-hero->viewPoint)*32,j*36,0);
-						else if(Mapa[i-1][j]!=-1)
+						else if(hero->curr_map->mapa[i-1][j]!=-1)
 							al_draw_bitmap_region(ground,0,0,32,32,(i-hero->viewPoint)*32,j*36,0);
 						else
 							al_draw_bitmap_region(ground,32,0,32,32,(i-hero->viewPoint)*32,j*36,0);
@@ -284,7 +338,7 @@ int main(void){
 							break;
 						}
 					default:
-						al_draw_bitmap(resources[Mapa[i][j]],
+						al_draw_bitmap(resources[hero->curr_map->mapa[i][j]],
 							(i-hero->viewPoint)*36, // x to draw
 							j*36,0);
 						cont_water_drawn = 0;
@@ -302,8 +356,12 @@ int main(void){
 			}
 
 			for(unsigned int i=0;i<npc.size();i++){
-				if((npc[i]->x)<=36*( 1+hero->viewPoint+(WIDTH/32)))
-					render(npc[i],hero->viewPoint,resources);
+				if(npc[i]->id_mapa == hero->currentBg && (npc[i]->x)<=36*( 1+hero->viewPoint+(WIDTH/32))){
+					if(hero->checkCollide(i))
+						npc[i]->active = false;
+					if(npc[i]->active)
+						render(npc[i],hero->viewPoint,resources);
+				}
 			}
 
 			hero->update();
@@ -328,7 +386,8 @@ int main(void){
 		delete npc[i];
 	};
 	delete hero;
-
+	for (unsigned int i=0;i<mapas.size();i++)
+		delete mapas[i];
 	for (unsigned int i=0;i<textList.size();i++)
 		delete textList[i];
 	for (unsigned int i=0;i<bg.size();i++)
